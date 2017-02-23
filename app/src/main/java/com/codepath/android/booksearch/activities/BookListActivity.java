@@ -1,5 +1,6 @@
 package com.codepath.android.booksearch.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.codepath.android.booksearch.R;
@@ -42,6 +45,21 @@ public class BookListActivity extends AppCompatActivity {
         bookAdapter = new BookAdapter(this, aBooks);
         // attach the adapter to the ListView
         lvBooks.setAdapter(bookAdapter);
+
+        fetchBooks("Oscar Wilde");
+
+        lvBooks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Book book = bookAdapter.getItem(position);
+
+                Intent intent = new Intent(BookListActivity.this, BookDetailActivity.class);
+
+                intent.putExtra("book", book);
+
+                startActivity(intent);
+            }
+        });
     }
 
     // Executes an API call to the OpenLibrary search endpoint, parses the results

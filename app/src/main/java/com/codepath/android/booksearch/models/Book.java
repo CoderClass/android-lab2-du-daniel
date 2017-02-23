@@ -6,12 +6,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Book {
+public class Book implements Serializable {
     private String openLibraryId;
     private String author;
     private String title;
+    private String publishers;
+    private String publish_date;
 
     public String getOpenLibraryId() {
         return openLibraryId;
@@ -24,6 +27,8 @@ public class Book {
     public String getAuthor() {
         return author;
     }
+
+    public String getPublishers() { return publishers; }
 
     // Get book cover from covers API
     public String getCoverUrl() {
@@ -44,6 +49,7 @@ public class Book {
             }
             book.title = jsonObject.has("title_suggest") ? jsonObject.getString("title_suggest") : "";
             book.author = getAuthor(jsonObject);
+            book.publishers = getPublisher(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -67,6 +73,22 @@ public class Book {
         }
     }
 
+    private static String getPublisher(final JSONObject jsonObject) {
+        try {
+            final JSONArray publishers = jsonObject.getJSONArray("publisher");
+            int numPublishers = publishers.length();
+            final String[] publisherStrings = new String[numPublishers];
+            for (int i = 0; i < numPublishers; i++) {
+                publisherStrings[i] = publishers.getString(i);
+            }
+
+            return TextUtils.join(", ", publisherStrings);
+        } catch (JSONException e) {
+            return "";
+        }
+    }
+
+
     // Decodes array of book json results into business model objects
     public static ArrayList<Book> fromJson(JSONArray jsonArray) {
         ArrayList<Book> books = new ArrayList<>(jsonArray.length());
@@ -86,5 +108,13 @@ public class Book {
             }
         }
         return books;
+    }
+
+    public String getPublish_date() {
+        return publish_date;
+    }
+
+    public void setPublish_date(String publish_date) {
+        this.publish_date = publish_date;
     }
 }
